@@ -104,7 +104,7 @@ def plot_data(model_complexity, dataset, size, noise, show_test):
 
 model_select = pn.widgets.IntSlider(name='Model complexity', value=1, start=1, end=20, step=1)
 dataset_select = pn.widgets.Select(name='Data complexity', value='Complex', options=['Simple', 'Complex', 'Very Complex'])
-size_select = pn.widgets.IntSlider(name='Sample size', value=20, start=20, end=100, step=1)
+size_select = pn.widgets.IntSlider(name='Sample size', value=10, start=20, end=100, step=1)
 noise_select = pn.widgets.FloatSlider(name='Noise level', value=5, start=0, end=100, step=1)
 show_test_plot = pn.widgets.Checkbox(name='Show Test Plot', value=True)  # Checkbox for toggling test plot visibility
 
