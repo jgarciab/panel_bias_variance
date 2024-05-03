@@ -23,9 +23,9 @@ def generate_data(size=1000, type='Simple', X=None):
     if X is None:
         X = np.random.rand(size)
     if type == 'Simple':
-        y = 2 * X
+        y = X - 1
     elif type == 'Complex':
-        y = 2 * X - 1.5*X**2
+        y = 2 * X - 1.5*X**2 - 1
     else:  # Very Complex
         y = 1*X**6 - 1*X - (1-X)**7
     
@@ -73,14 +73,15 @@ def fit_and_evaluate_model(model_complexity, X_train, y_train, X_test, y_test):
             formula += f" {sign}{c:2.1f} x"
         else:
             formula += f" {sign}{c:2.1f} x^{i+1}"
-            
+
+    pred = model.predict(np.linspace(0, 1, 100).reshape(100,1))
     
-    return y_train_pred, y_test_pred, mse_train, mse_test, formula
+    return y_train_pred, y_test_pred, mse_train, mse_test, formula, pred
 
 def plot_data(model_complexity, dataset, size, noise, show_test, new_data):
 
     global X_train, y_train, X_test, y_test
-    y_train_pred, y_test_pred, mse_train, mse_test, formula = fit_and_evaluate_model(
+    y_train_pred, y_test_pred, mse_train, mse_test, formula, pred = fit_and_evaluate_model(
         model_complexity, X_train, y_train, X_test, y_test)
 
     
@@ -88,28 +89,31 @@ def plot_data(model_complexity, dataset, size, noise, show_test, new_data):
     df_train = pd.DataFrame({
         'X': X_train.flatten(),
         'y': y_train,
-        'y_pred': y_train_pred,
-        'y_real': generate_data(size=size_select.value, type=dataset_select.value, X=X_train.flatten())[1]
+        
+        
     })
 
+    df_all = pd.DataFrame({
+        'X': np.linspace(0, 1, 100),
+        'y_pred': pred,
+        'y_real': generate_data(size=size_select.value, type=dataset_select.value, X=np.linspace(0, 1, 100))[1]
+    })
     
     df_test = pd.DataFrame({
         'X': X_test.flatten(),
         'y': y_test,
-        'y_pred': y_test_pred,
-        'y_real': generate_data(size=size_select.value, type=dataset_select.value, X=X_test.flatten())[1]
     })
     
     # Create hvPlot visualizations
-    plot_train = df_train.hvplot.scatter(x='X', y='y', color='navy', tools=[]) * \
-                 df_train.hvplot.line(x='X', y='y_pred', color='navy', tools=[]) * \
-                 df_train.hvplot.line(x='X', y='y_real', color='cornflowerblue', tools=[]).redim.range(X=(0, 1), Y=(-200, 100))
+    plot_train = df_train.hvplot.scatter(x='X', y='y', color='navy', tools=[], ylim=(-200,100)) * \
+                 df_all.hvplot.line(x='X', y='y_pred', color='navy', tools=[]) * \
+                 df_all.hvplot.line(x='X', y='y_real', color='cornflowerblue', tools=[])
     
     plot_train.opts(title=f'Training Data. MSE {mse_train:.1f}. \ny-hat = {formula}', xlabel='X', ylabel='y', width=600, height=400)
     
-    plot_test = df_test.hvplot.scatter(x='X', y='y', color='gold', tools=[]) * \
-                df_test.hvplot.line(x='X', y='y_pred', color='navy', tools=[]) * \
-                 df_test.hvplot.line(x='X', y='y_real', color='cornflowerblue', tools=[]).redim.range(X=(0, 1), Y=(-200, 100))
+    plot_test = df_test.hvplot.scatter(x='X', y='y', color='gold', tools=[], ylim=(-200,100)) * \
+                df_all.hvplot.line(x='X', y='y_pred', color='navy', tools=[]) * \
+                 df_all.hvplot.line(x='X', y='y_real', color='cornflowerblue', tools=[]).redim.range(X=(0, 1), Y=(-200, 100))
     
     plot_test.opts(title=f'Testing Data. MSE {mse_test:.1f}', xlabel='X', ylabel='y', width=600, height=400)
 
