@@ -160,7 +160,7 @@ def plot_data(model_complexity, dataset, size, noise, show_test, new_data):
     
     plot_train.opts(title=f'Training Data. MSE {mse_train:.1f}. \\ny-hat = {formula}', xlabel='X', ylabel='y', width=600, height=400)
     
-    plot_test = df_test.hvplot.scatter(x='X', y='y', color='gold', tools=[], ylim=(-200,100)) * \
+    plot_test = df_test.hvplot.scatter(x='X', y='y', color='maroon', tools=[], ylim=(-200,100)) * \
                 df_all.hvplot.line(x='X', y='y_pred', color='navy', tools=[]) * \
                  df_all.hvplot.line(x='X', y='y_real', color='cornflowerblue', tools=[]).redim.range(X=(0, 1), Y=(-200, 100))
     
